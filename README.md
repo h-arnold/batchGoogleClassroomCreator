@@ -1,6 +1,8 @@
-# Batch Google Classroom Management Script
+# Google Classroom Organiser
 
 This Google Apps Script automates the creation and management of Google Classrooms based on data from a Google Sheet. It allows you to create classrooms, add teachers, and update classrooms using a custom menu in the Google Sheets interface.
+
+It's also used to create the class assessment record spreadsheets for my [Google Slides Assessor](https://github.com/h-arnold/googleSlidesAssessor).
 
 ## Setup Instructions
 
