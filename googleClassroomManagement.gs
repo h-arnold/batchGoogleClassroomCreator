@@ -1,8 +1,10 @@
 function onOpen() {
   let ui = SpreadsheetApp.getUi();
   ui.createMenu('Classroom Creator')
+    .addItem('Get Google Classrooms', 'fetchGoogleClassrooms')
     .addItem('Create Google Classrooms', 'createGoogleClassrooms')
     .addItem('Update Google Classrooms', 'updateGoogleClassrooms')
+    .addItem('Set up assessment docs', 'copyTemplateForActiveCourses')
     .addToUi();
 }
 
@@ -128,5 +130,42 @@ function updateGoogleClassrooms() {
         console.log('Failed to update course: ' + courseId + ' for row: ' + (i + 1) + ' Error: ' + e.message);
       }
     }
+  }
+}
+
+function fetchGoogleClassrooms() {
+  // Get the active spreadsheet and sheet
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = spreadsheet.getActiveSheet();
+
+  // Clear the existing data in the sheet
+  sheet.clear();
+
+  // Set the headers in the first row
+  const headers = ['Classroom ID', 'Name', 'Teacher 1', 'Teacher 2', 'Teacher 3', 'Teacher 4', 'Enrollment Code'];
+  sheet.appendRow(headers);
+
+  // Get the list of courses where the user is a teacher
+  const courses = Classroom.Courses.list({ teacherId: 'me' }).courses || [];
+
+  // Iterate over each course and populate the data
+  for (const course of courses) {
+    // Get the list of teachers for the course
+    const teachers = Classroom.Courses.Teachers.list(course.id).teachers || [];
+    const teacherEmails = teachers.map(teacher => teacher.profile.emailAddress);
+
+    // Create a row with course details
+    const row = [
+      course.id,                   // Classroom ID
+      course.name,                 // Name
+      teacherEmails[0] || '',      // Teacher 1
+      teacherEmails[1] || '',      // Teacher 2
+      teacherEmails[2] || '',      // Teacher 3
+      teacherEmails[3] || '',      // Teacher 4
+      course.enrollmentCode || ''  // Enrollment Code
+    ];
+
+    // Append the row to the sheet
+    sheet.appendRow(row);
   }
 }
